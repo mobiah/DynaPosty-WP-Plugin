@@ -1,17 +1,59 @@
 <?php
 /*
-*	Dynaposty Wordpress Hooks
+*	Dynaposty Wordpress Hooks  
 */
+
+/*
+*	Makes sure that there is an event which does the home-calling
+*	This function can be called at activation, and potentially on every page load
+*	to make sure it's there.
+*/
+function dypo_addReporting() {
+	// If there is no next scheduled reporting time, then stick it in the schedule (daily)
+	if ( !wp_next_scheduled(DYPO_REPORTING_ACTION) ) {
+		wp_schedule_event( time(), 'daily', DYPO_REPORTING_ACTION ); // hourly, daily and twicedaily
+	} 
+}
+function dypo_removeReporting() {
+	wp_clear_scheduled_hook(DYPO_REPORTING_ACTION);
+}
+// this call makes the dypo_addReporting get called as soon as all plugins are loaded.
+// this happens on every page load.  if that's undesirable (as it already is supposed to get
+// added on plugin activation, then delete this line.
+add_action( 'plugins_loaded', 'dypo_addReporting');
+
+
+/*
+*	AJAX test.  This function does nothing but help confirm that an AJAX request can be
+*	successfully handled.  
+*/
+add_action('wp_ajax_dypo_ajaxTest', 'dypo_ajaxTest');
+function dypo_ajaxTest() {
+	echo "true";
+	die();
+}
+
+/*
+*	Test results.  If everything works well in the dypo_envTest function (see dypo-admin.php)
+*	page, then it will post to this function, causing it to save the "success" status.
+*/
+add_action('wp_ajax_dypo_envTestSuccess', 'dypo_envTestSuccess');
+function dypo_envTestSuccess() {
+	global $dypo_envTest, $dypo_options;
+	$dypo_envTest = 'success';
+	$dypo_options['dypo_envTest'] = 'success';
+	update_option( DYPO_OPTIONS, $dypo_options );
+}
 
 // this is where the magic happens.   Not really,  just string replacing.
 // * loads all the values from the database
 // * checks to see if the URL matches anything we're looking for.
-// * if so, find the shortcode value set appropriate,
+// * if so, find the appropriate shortcode value set,
 // * and then register some shortcode handlers to do the string replacing.
 add_action('init','dypo_init');
 function dypo_init ( $atts=null, $content=null ) {
 	global $dypo_URLVar, $dypo_setCookie, $dypo_cookieExpire, $dypo_shortcodes, $dypo_valueSets, $dypo_values;
-
+	
 	// get the current values for the current shortcode/valueset combinations
 	// this always needs to happen.
 	dypo_getValues();
@@ -26,9 +68,9 @@ function dypo_init ( $atts=null, $content=null ) {
 	// check if the referrer's query string contains the val we're looking for
 	// also, check the cookie to see if we've saved any indicator.
 
-//	$refVars = parse_query($_SERVER['HTTP_REFERER']); // this is for checking referrer.  maybe later.
-	
-	$refVars = $_GET;
+//	$refVars = dypo_parseQuery($_SERVER['HTTP_REFERER']); // this is for checking referrer.  maybe later.
+	$refVars = $_GET; // this is when the querystring we care about is *this* page's querystring
+
 	$urlValue = ''; // lets try to fill this variable now.
 	if ( array_key_exists( $dypo_URLVar, $refVars ) && strlen( $refVars[$dypo_URLVar] ) > 0 ) {
 		// we found the item in the referrer QS - try to determine which valueset is appropriate, 
@@ -90,7 +132,10 @@ function dypo_mediaButtonIcon () {
 <?
 } // end function dypo_mediaButtonIcon
 
+
 // shows the hidden div which allows the user to choose and actually insert a shortcode
+// gets tacked on to the end of the page, and is invisible.  only shows up in thickbox 
+// created by dypo_mediaButtonIcon code above.
 function dypo_shortcodeInserter() {
 	global $dypo_shortcodes;
 ?>

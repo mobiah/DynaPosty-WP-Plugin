@@ -1,12 +1,22 @@
 <?
 /*
-*	Database installation and/or upgrade for DynaPosty
+*	DynaPosty activation/deactivation hooks
+*	Including: 
+*		Database installation and/or upgrade for DynaPosty
+*		registering reporting functions
 */
 
-// for registering this function, we need to pass in the main plugin file, which in our case,
+// for registering activation/deactivation functions, we need to pass in the main plugin file, which in our case,
 // is the "includer" of this file.
 $backtrace = debug_backtrace();
-register_activation_hook( $backtrace[0]['file'], 'dypo_install');
+$mainFile = $backtrace[0]['file'];
+
+// a couple of hooks to set up scheduled reporting routines (or remove them if deactivating)
+// see dypo-hooks.php
+register_activation_hook( $mainFile, 'dypo_addReporting' );
+register_deactivation_hook( $mainFile, 'dypo_removeReporting');
+
+register_activation_hook( $mainFile, 'dypo_install');
 function dypo_install() {
 	global $wpdb, $dypo_options;
 	

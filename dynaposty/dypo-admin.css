@@ -52,3 +52,30 @@ a.dypo_delete {
 	font-weight: bold;
 	font-size: 12px;
 }
+
+#dypo_envTest {
+	margin-bottom: 10px;
+}
+.dypo_tests {
+    width:600px;
+    float:left;
+}
+.dypo_tests dt {
+    font-weight:bold;
+    display:block;
+    float:left;
+    width:200px;
+    margin:0 10px 4px 0;
+}
+.dypo_tests dd {
+    float:left;
+    margin:0 0 4px 0;
+    padding:0 0 0 20px;
+    background:transparent url(images/icon_error.png) center left no-repeat;
+}
+.dypo_tests dd.dypo_pass {
+    background:transparent url(images/icon_success.png) center left no-repeat;
+}
+.dypo_success {
+    clear:both;
+}

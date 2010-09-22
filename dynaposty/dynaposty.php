@@ -22,15 +22,19 @@ define("DYPO_JS_URL", DYPO_URL.'/js');
 global $wpdb;
 define("DYPO_SHORTCODE_TABLE", $wpdb->prefix."dypo_shortcodes_vals");
 define("DYPO_URLVAR_COOKIE", 'dypo_urlvar');
-
+define("DYPO_VERSION", "0.1");
+define("DYPO_REPORTING_ACTION", 'dypo_reporting');
+define("DYPO_REPORTING_URL", 'http://www.jeremyhou.com/mobiah/posty-reporting.php');
 
 /*
 *	Includes
 */
 include_once( DYPO_PATH.'/dypo-admin.php' );
+include_once( DYPO_PATH.'/dypo-config.php' );
 include_once( DYPO_PATH.'/dypo-functions.php' );
 include_once( DYPO_PATH.'/dypo-hooks.php' );
 include_once( DYPO_PATH.'/dypo-install.php' );
+include_once( DYPO_PATH.'/dypo-reporting.php' );
 
 
 /*
@@ -39,6 +43,26 @@ include_once( DYPO_PATH.'/dypo-install.php' );
 define ('DYPO_OPTIONS', 'dypo_options');
 global $dypo_options;  // the array which holds all options
 $dypo_options = get_option( DYPO_OPTIONS, array());
+
+// look for a unique identifier for this dynaposty installation.  In the future this may be replaced by
+// actual registration for an API key.  For now, if we dont' find a key, generate a random one.
+global $dypo_key;
+if ( is_array($dypo_options) && array_key_exists( 'dypo_key', $dypo_options ) && $dypo_options['dypo_key'] != '' ) {
+	$dypo_key = $dypo_options['dypo_key'];
+} else {
+	$dypo_key = dypo_randomString( 25 );  // make a key of random alphanumeric characters, length 25
+	$dypo_options['dypo_key'] = $dypo_key;  // put it in the options array
+	update_option( DYPO_OPTIONS, $dypo_options ); // and save it back to the options table
+}
+
+// this variable tells whether or not we have run the server environment compatibility tests.
+// if it is blank, they have not been run.  one can set it to blank to re-run the tests.
+global $dypo_envTest;
+if ( is_array($dypo_options) && array_key_exists( 'dypo_envTest', $dypo_options ) ) {
+	$dypo_envTest = $dypo_options['dypo_envTest'];
+} else {
+	$dypo_envTest = '';
+}
 
 // what url variable should we look for?
 global $dypo_URLVar;
@@ -84,6 +108,5 @@ if ( is_array($dypo_options) && array_key_exists( 'dypo_valueSets', $dypo_option
 // 2-dimensional array.  top-level array keys are value sets, values are arrays
 // within sub arrays, array keys are shortcodes, values are shortcode values.
 global $dypo_values;
-
 
 ?>

@@ -243,7 +243,7 @@ function dypo_delShortcode( domObj, columnClassPrefix ) {
 
 // show a message to the user on the main admin/config page, then fade it out.
 // give it a message and a div to dump the message into
-function dypo_showMessage( strMsg, divID, useFadeOut, isError ) {
+function dypo_showMessage( strMsg, divID, useFadeOut, isError, timeOut, fadeTime ) {
 
 	if ( typeof(strMsg) == 'undefined' || strMsg.length == 0 ) {
 		// no message to show?  don't do anything.
@@ -258,9 +258,12 @@ function dypo_showMessage( strMsg, divID, useFadeOut, isError ) {
 	if ( typeof(isError) == 'undefined' ) {
 		isError = false;
 	}
-	
-	var timeOut = 3000;  // wait for a default of 3 seconds.
-	var fadeTime = 1000; // fade for a default of 1 second
+	if ( typeof(timeOut) == 'undefined' ) {
+		timeOut = 3000;  // wait for a default of 3 seconds.
+	}
+	if ( typeof(fadeTime) == 'undefined' ) {
+		fadeTime = 1000; // fade for a default of 1 second
+	}
 	
 	if ( isError ) {
 		jQuery('div#'+divID).addClass('dypo_error_message');

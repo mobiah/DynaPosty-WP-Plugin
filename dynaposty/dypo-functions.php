@@ -8,7 +8,7 @@
 */
 function isDyPoAdminPage() {
 	if ( strpos( $_SERVER["SCRIPT_NAME"], '/wp-admin' ) === false ){
-		// if the URL somehow doesn't have /wp-admin, this is not a sopo admin page
+		// if the URL somehow doesn't have /wp-admin, this is not a dynaposty admin page
 		return false;
 	}
 	if ( strpos( $_SERVER["SCRIPT_NAME"], 'page.php' ) !== false 
@@ -24,7 +24,7 @@ function isDyPoAdminPage() {
 }
 
 // makes a comma separated list of valid shortcodes, 
-// with or without the special urlvar 
+// with the special urlvar keyword added on the end
 function dypo_shortcodeList () {
 	global $dypo_shortcodes;
 	
@@ -37,7 +37,7 @@ function dypo_shortcodeList () {
 }
 
 // makes a comma separated list of valid valuesets, 
-// with or without the special default set 
+// with the special default set added on the end
 function dypo_valueSetList () {
 	global $dypo_valueSets;
 	
@@ -50,14 +50,17 @@ function dypo_valueSetList () {
 }
 
 // gets the shortcode/value pairs from the database.
+// and put them into the global 2D values array
 function dypo_getValues() {
 	global $wpdb, $dypo_values, $dypo_shortcodes, $dypo_valueSets;
 	
 	$shortcodeWhere = dypo_shortcodeList();
 	$valueSetWhere = dypo_valueSetList();
 	
+	// put the comma-separated lists into the SQL where case
 	$where = " shortcode IN ($shortcodeWhere) AND valueset IN ($valueSetWhere) ";
 	
+	// pass that off, and get all the returned values
 	$results = dypo_getShortcodeValues($where);
 	
 	$dypo_values = array();
@@ -80,14 +83,16 @@ function dypo_getValues() {
 function dypo_saveShortcodeValues ( $scVals ) {
 	global $wpdb;
 	
+	// sanity checking.
 	if ( !is_array($scVals) ) {
-		echo('Something went wrong, scVals array is of wrong structure.');
+		echo('Something went wrong, scVals is not an array.');
 		return;
 	}
 	// loop through all the value sets (which contain arrays of shortcode/values)
 	foreach ( $scVals as $vsID => $sCodes )  {
+		// more sanity checking.
 		if ( !is_array($sCodes) ) {
-			echo('Something went wrong, scVals array is of wrong structure.');
+			echo('Something went wrong, values in scVals are not arrays.');
 			return;
 		}
 		
@@ -100,6 +105,7 @@ function dypo_saveShortcodeValues ( $scVals ) {
 				// the record already exists.  But if the value is unchanged, 
 				// we don't need to send an update
 				if ( $currentRecord->val != $scValue ) {
+					// ok, it was changed, let's save it.
 					$wpdb->update( 	DYPO_SHORTCODE_TABLE, 
 									array( 'val'=>$scValue ),
 									array( 'shortcode'=>$shortcode, 'valueset'=>$vsID ),
@@ -108,6 +114,7 @@ function dypo_saveShortcodeValues ( $scVals ) {
 								);
 				}
 			} else {
+				// this value/shortcode combo does not exist yet.  Let's make it.
 				$wpdb->insert( DYPO_SHORTCODE_TABLE, array( 'shortcode'=>$shortcode, 'valueset'=>$vsID, 'val'=>$scValue) );
 			}
 		}
@@ -219,7 +226,7 @@ function dypo_json_decode($json, $assoc = false) {
 *  Use this function to parse out the query array element from
 *  the output of parse_url().
 */
-function parse_query($var){
+function dypo_parseQuery($var){
 	$var  = parse_url($var, PHP_URL_QUERY);
 	$var  = html_entity_decode($var);
 	$var  = explode('&', $var);
@@ -232,4 +239,16 @@ function parse_query($var){
 	unset($val, $x, $var);
 	return $arr;
 }
+
+/*
+*	random string generator
+*/
+function dypo_randomString($length = 10, $letters = '1234567890qwertyuiopasdfghjklzxcvbnm') {
+	$s = '';
+	$lettersLength = strlen($letters)-1;
+	for($i = 0 ; $i < $length ; $i++) {
+		$s .= $letters[rand(0,$lettersLength)];
+	}
+	return $s;
+} 
 ?>
