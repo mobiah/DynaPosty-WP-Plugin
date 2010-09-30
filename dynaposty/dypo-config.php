@@ -48,7 +48,10 @@ function dypo_configDisplay() {
 	<div class="icon32" style="background:url('<?=DYPO_IMG_URL?>/icon_dynamite_40x35.png') no-repeat transparent;"><br/></div>
 	<h2 style="clear:none;"><?_e("DynaPosty Settings");?></h2> 
 	<div id="dypo_optionsContainer">
-		<? if ($dypo_envTest == '' || $_GET['dypo_doEnvTest']=='true') dypo_envTester(); ?>
+		<? if ($dypo_envTest == '' || $_GET['dypo_doEnvTest']=='true') {
+			dypo_envTester();
+			add_action('admin_footer','dypo_congrats');
+		} ?>
 		<div class="dypo_messageContainer">
 			<div id="dypo_contentLoading" style="display:none;"><img alt="" id="ajax-loading" src="images/wpspin_light.gif"/></div>
 			<div id="dypo_contentMessage" class="dypo_message <?=($dypo_envTest == 'failure' ? 'dypo_error_message' : '')?>" <?=($dypo_envTest == 'failure' ? '' : 'style="display:none;"')?> ><?=($dypo_envTest == 'failure' ? __('Warning - your server configuration may prevent the normal function of DynaPosty.').'(<a href="'.$_SERVER["REQUEST_URI"].'&dypo_doEnvTest=true">'.__('Click to test again').'</a>)' : '&nbsp;')?></div>
