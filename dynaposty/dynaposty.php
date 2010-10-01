@@ -24,7 +24,7 @@ define("DYPO_SHORTCODE_TABLE", $wpdb->prefix."dypo_shortcodes_vals");
 define("DYPO_URLVAR_COOKIE", 'dypo_urlvar');
 define("DYPO_VERSION", "0.1");
 define("DYPO_REPORTING_ACTION", 'dypo_reporting');
-define("DYPO_REPORTING_URL", 'http://www.jeremyhou.com/mobiah/posty-reporting.php');
+define("DYPO_REPORTING_URL", 'http://www.mobiah.com/dynaposty/posty-reporting.php');
 
 /*
 *	Includes
