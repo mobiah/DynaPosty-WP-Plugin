@@ -126,6 +126,7 @@ function dypo_saveShortcodeValues ( $scVals ) {
 // returns an error message if there was one.
 function dypo_parseCSV ( $filename ) {
 	global $dypo_shortcodes, $dypo_valueSets, $dypo_values;
+    ini_set('auto_detect_line_endings', 1);
 	
 	$handle = fopen( $filename, "r");
 	if ($handle !== false) {
