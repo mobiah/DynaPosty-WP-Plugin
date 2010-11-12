@@ -126,7 +126,7 @@ function dypo_saveShortcodeValues ( $scVals ) {
 // returns an error message if there was one.
 function dypo_parseCSV ( $filename ) {
 	global $dypo_shortcodes, $dypo_valueSets, $dypo_values;
-    ini_set('auto_detect_line_endings', 1);
+	ini_set('auto_detect_line_endings', 1);
 	
 	$handle = fopen( $filename, "r");
 	if ($handle !== false) {
@@ -146,7 +146,7 @@ function dypo_parseCSV ( $filename ) {
 				return "On line ".($counter+1).", you have $num items, but not enough shortcode columns to accomodate them.";
 			}
 			// get the name of the value set first.
-			$newValSetArray[$counter] = $data[0];
+			$newValSetArray[$counter+1] = $data[0];
 			// get the urlvar second.
 			$newShortcodeArray['urlvar'] = trim($data[1]);
 			// then fill the rest of the shortcodes, if the user has included them.
@@ -160,7 +160,7 @@ function dypo_parseCSV ( $filename ) {
 				$i++;
 			}
 			// then replace the current valueset in the global values.
-			$newValueArray[$counter] = $newShortcodeArray;
+			$newValueArray[$counter+1] = $newShortcodeArray;
 			$counter++;
 		}
 		fclose($handle);
